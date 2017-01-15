@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     TextView bottomSheetTextView;
+    Button btnShowBottomSheet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,10 +96,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomSheetTextView = (TextView) bottomSheet.findViewById(R.id.bottom_sheet_title);
-        ItemPagerAdapter adapter = new ItemPagerAdapter(this,mDrawables);
+        btnShowBottomSheet = (Button) findViewById(R.id.btn_show_bottom_sheet);
+        ItemPagerAdapter adapter = new ItemPagerAdapter(this, mDrawables);
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(adapter);
 
-        behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_ANCHOR_POINT);
+        btnShowBottomSheet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+
+                if (fragmentManager.getBackStackEntryCount() > 0) {
+                    fragmentManager.popBackStackImmediate();
+                    fragmentManager
+                            .beginTransaction()
+                            .replace(R.id.bottom_sheet_fragment, TestFragment.newInstance("From runtime"))
+                            .addToBackStack(null)
+                            .commit();
+                } else {
+                    fragmentManager
+                            .beginTransaction()
+                            .replace(R.id.bottom_sheet_fragment, TestFragment.newInstance("From runtime"))
+                            .commit();
+                }
+
+
+                behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_ANCHOR_POINT);
+            }
+        });
+
+        behavior.setState(BottomSheetBehaviorGoogleMapsLike.STATE_HIDDEN);
     }
 }
